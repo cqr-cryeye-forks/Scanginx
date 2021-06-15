@@ -16,7 +16,8 @@ def send_http_request(url, headers={}, timeout=8.0):
     httpResponse   = requests.get(url, headers=headers, timeout=timeout, verify=False)
     httpHeaders    = httpResponse.headers
 
-    print("Server: %s", httpHeaders.get('Server', ''))
+#     print("Server: %s".format(httpHeaders.get('Server', '')))
+    print(httpHeaders.get('Server', ''))
     return httpResponse
 
 
