@@ -45,6 +45,56 @@ def exploit(url):
     return data
 
 
+def check_target(target):
+    """
+    If a result for a link is found, then scanning does not proceed further.
+    If there was a scan for "http://", then the second one will not be performed. Same for "https://"
+    :param target: url/domain/ip_v4
+    :return: dict
+    """
+    scan1 = False
+    scan2 = False
+    http = "http://"
+    https = "https://"
+    data = {}
+    if target.startswith(https):
+        try:
+            print(111, target)
+            data = exploit(target)
+        except Exception as e:
+            pass
+        scan1 = True
+    if not target.startswith(http) and data == {}:
+        if target.startswith(https):
+            target = target[len(https):]
+        target = http + target
+        try:
+            print(222, target)
+            data = exploit(target)
+        except Exception as e:
+            pass
+        scan2 = True
+    if not target.startswith(https) and data == {} and scan1 == False:
+        if target.startswith(http):
+            target = target[len(http):]
+        target = https + target
+        try:
+            print(333, target)
+            data = exploit(target)
+        except Exception as e:
+            pass
+    if not target.startswith(http) and data == {} and scan2 == False:
+        if target.startswith(https):
+            target = target[len(https):]
+        target = http + target
+        try:
+            print(444, target)
+            data = exploit(target)
+        except Exception as e:
+            pass
+    return data
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--target', type=str, help='Your target url/domain/ip')
@@ -58,11 +108,8 @@ if __name__ == '__main__':
     MAIN_DIR: Final[pathlib.Path] = pathlib.Path(__file__).parent
     OUTPUT_FILE: str = MAIN_DIR / output
 
-    data = {}
-    try:
-        data = exploit(target)
-    except Exception as e:
-        pass
+    data = check_target(target)
+
     if data == {}:
         data = {
             "Error": "Nothing found in Scanginx"
