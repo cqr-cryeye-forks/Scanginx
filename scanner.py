@@ -21,8 +21,9 @@ def send_http_request(url, headers={}, timeout=8.0):
     httpResponse = requests.get(url, headers=headers, timeout=timeout, verify=False)
     httpHeaders = httpResponse.headers
 
-    # print(httpHeaders.get('Server', ''))
+    print(httpHeaders.get('Server', ''))
     data["Server"] = httpHeaders.get('Server', '')
+
     return httpResponse
 
 
@@ -37,10 +38,10 @@ def exploit(url):
 
     if httpResponse.status_code == 206 and "Content-Range" in httpResponse.text:
         data["Is_Vulnerable"] = "CVE-2017-7529"
-        # print("Vulnerable to CVE-2017-7529")
+        print("Vulnerable to CVE-2017-7529")
     else:
         data["Is_Vulnerable"] = "No Vulnerable"
-        # print("No Vulnerable")
+        print("No Vulnerable")
 
     return data
 
@@ -108,12 +109,13 @@ if __name__ == '__main__':
     MAIN_DIR: Final[pathlib.Path] = pathlib.Path(__file__).parent
     OUTPUT_FILE: str = MAIN_DIR / output
 
-    data = check_target(target)
+    data = {}
 
-    if data == {}:
-        data = {
+    all_data = check_target(target)
+    if all_data == {}:
+        all_data = {
             "Error": "Nothing found in Scanginx"
         }
     with open(OUTPUT_FILE, 'w') as jf:
-        json.dump(data, jf, indent=2)
-    print("----OUTPUT----\n", data)
+        json.dump(all_data, jf, indent=2)
+    print("----OUTPUT----\n", all_data)
